@@ -1,6 +1,6 @@
 🚀 Welcome to The HyperRush Network! 🎮
 Welcome to The HyperRush Network, an exciting collection of games! Dive into a world of fun and challenge with a variety of games designed for players of all skill levels. Whether you're looking for adventure or a brain teaser, you'll find something here to enjoy!
-
+[test](https://example.com)
 🌟 Features
 
 Diverse Games: Explore a range of games, from action-packed adventures to mind-bending puzzles.
