@@ -14,7 +14,7 @@
 
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(to top, black, #020121, black);
+            background: linear-gradient(to top, black, #020121, #020121, black);
             color: #fff;
             display: flex;
             flex-direction: column;
@@ -75,12 +75,6 @@
                 padding: 15px;
             }
 
-            .invis .title {
-                font-size: 0px;
-                display: none;
-                color: transparent
-            }
-
             canvas {
                 height: 200px;
             }
@@ -104,6 +98,11 @@
         <!-- Precipitation Chart -->
         <div class="chart-container">
             <canvas id="precipitation-chart"></canvas>
+        </div>
+
+        <!-- Snowfall Chart -->
+        <div class="chart-container">
+            <canvas id="snowfall-chart"></canvas>
         </div>
 
         <!-- Wind Speed Chart -->
@@ -131,7 +130,7 @@
         };
 
         async function updateWeather(lat, lon) {
-            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,precipitation,windspeed_10m&timezone=Europe%2FBerlin`;
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,precipitation,snowfall,windspeed_10m&timezone=Europe%2FBerlin`;
 
             try {
                 const response = await fetch(url);
@@ -144,9 +143,11 @@
                     updateTitle();
                     displayTemperatureChart(data);
                     displayPrecipitationChart(data);
-                    displayWindSpeedChart(data);
+                    displaySnowfallChart(data);  // Added snowfall chart
+                    displayWindSpeedChart(data); // Restored wind speed chart
                 }
             } catch (error) {
+                displayNotification("Error fetching weather data.", "error");
             }
         }
 
@@ -162,223 +163,235 @@
             setTimeout(() => notification.style.display = "none", 5000); // Hide after 5 seconds
         }
 
-                function displayTemperatureChart(data) {
-    const currentTime = new Date();
-    const currentHour = currentTime.getHours();
-    const next24Hours = data.hourly.time.slice(currentHour, currentHour + 24);
-    const temperatures = data.hourly.temperature_2m.slice(currentHour, currentHour + 24);
-    const times = next24Hours.map(time => {
-        const date = new Date(time);
-        return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-    });
+        function displayTemperatureChart(data) {
+            const currentTime = new Date();
+            const currentHour = currentTime.getHours();
+            const next24Hours = data.hourly.time.slice(currentHour, currentHour + 24);
+            const temperatures = data.hourly.temperature_2m.slice(currentHour, currentHour + 24);
+            const times = next24Hours.map(time => {
+                const date = new Date(time);
+                return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+            });
 
-    const ctx = document.getElementById('temp-chart').getContext('2d');
-    const tempChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: times,
-            datasets: [{
-                label: `Temperature (°C) - ${currentTemperature}°C`, // Dynamische temperatuur in de label
-                data: temperatures,
-                borderColor: 'rgba(75, 192, 192, 1)',
-                backgroundColor: 'rgba(75, 192, 192, 0)',
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                x: {
-                    grid: {
-                        display: true,
-                        color: 'rgba(255, 255, 255, 0.2)',
-                        tickMarkLength: 0
-                    },
-                    ticks: {
-                        autoSkip: false,
-                        maxRotation: 90,
-                        minRotation: 90,
-                        font: {
-                            size: 10,
-                            family: 'Arial, sans-serif',
-                        }
-                    }
+            const ctx = document.getElementById('temp-chart').getContext('2d');
+            const tempChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: times,
+                    datasets: [{
+                        label: `Temperature (°C) - ${currentTemperature}°C`,
+                        data: temperatures,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0)',
+                        fill: true,
+                        tension: 0.4
+                    }]
                 },
-                y: {
-                    max: 30,
-                    grid: {
-                        display: true,
-                        color: 'rgba(255, 255, 255, 0.075)',
-                        lineWidth: 1
-                    },
-                    ticks: {
-                        stepSize: 5,
-                    }
-                }
-            }
-        }
-    });
-}
-
-
-function displayPrecipitationChart(data) {
-    const currentTime = new Date();
-    const currentHour = currentTime.getHours();
-    const next24Hours = data.hourly.time.slice(currentHour, currentHour + 24);
-    const precipitation = data.hourly.precipitation.slice(currentHour, currentHour + 24);
-    const times = next24Hours.map(time => {
-        const date = new Date(time);
-        return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-    });
-
-    const ctx = document.getElementById('precipitation-chart').getContext('2d');
-    const precipitationChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: times,
-            datasets: [{
-                label: 'Precipitation (mm)',
-                data: precipitation,
-                borderColor: '#403bcc',
-                backgroundColor: '#403bcc',
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            onClick: function(evt) {
-                const activePoint = precipitationChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
-                if (activePoint.length > 0) {
-                    const x = activePoint[0].element.x;
-                    const index = Math.round(x / (precipitationChart.width / precipitationChart.data.labels.length)); // Calculate the nearest index based on X position
-                    const value = precipitationChart.data.datasets[0].data[index];
-                    showTooltip(evt, `Precipitation: ${value} mm`);
-                }
-            },
-            scales: {
-                y: { 
-                    max: 10,
-                    min: 0,
-                    grid: {
-                        display: true,
-                        color: 'rgba(255, 255, 255, 0.075)', // Horizontal grid line color
-                        lineWidth: 1,
-                        
-                    },
-                },
-                x: {
-                    grid: {
-                        display: true,
-                        color: 'rgba(255, 255, 255, 0.2)',
-                        tickMarkLength: 0
-                    },
-                    ticks: {
-                        autoSkip: false,
-                        maxRotation: 90,
-                        minRotation: 90,
-                        font: {
-                            size: 10, // Adjust font size here
-                            family: 'Arial, sans-serif',
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            grid: {
+                                display: true,
+                                color: 'rgba(255, 255, 255, 0.2)',
+                                tickMarkLength: 0
+                            },
+                            ticks: {
+                                autoSkip: false,
+                                maxRotation: 90,
+                                minRotation: 90,
+                                font: {
+                                    size: 10,
+                                    family: 'Arial, sans-serif',
+                                }
+                            }
+                        },
+                        y: {
+                            max: 30,
+                            grid: {
+                                display: true,
+                                color: 'rgba(255, 255, 255, 0.075)',
+                                lineWidth: 1
+                            },
+                            ticks: {
+                                stepSize: 5,
+                            }
                         }
                     }
                 }
-            }
+            });
         }
-    });
-}
 
-function displayWindSpeedChart(data) {
-    const currentTime = new Date();
-    const currentHour = currentTime.getHours();
-    const next24Hours = data.hourly.time.slice(currentHour, currentHour + 24);
-    const windSpeedsAt10m = data.hourly.windspeed_10m.slice(currentHour, currentHour + 24);
-    const windSpeedsAt2m = windSpeedsAt10m.map(speed => windAt2m(speed));
+        function displayPrecipitationChart(data) {
+            const currentTime = new Date();
+            const currentHour = currentTime.getHours();
+            const next24Hours = data.hourly.time.slice(currentHour, currentHour + 24);
+            const precipitation = data.hourly.precipitation.slice(currentHour, currentHour + 24);
+            const times = next24Hours.map(time => {
+                const date = new Date(time);
+                return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+            });
 
-    const times = next24Hours.map(time => {
-        const date = new Date(time);
-        return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-    });
-
-    const ctx = document.getElementById('wind-speed-chart').getContext('2d');
-    const windSpeedChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: times,
-            datasets: [{
-                label: 'Wind Speed (2m, m/s)',
-                data: windSpeedsAt2m,
-                borderColor: 'rgba(255, 159, 64, 1)',
-                backgroundColor: 'rgba(255, 159, 64, 0)',
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            onClick: function(evt) {
-                const activePoint = windSpeedChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
-                if (activePoint.length > 0) {
-                    const x = activePoint[0].element.x;
-                    const index = Math.round(x / (windSpeedChart.width / windSpeedChart.data.labels.length)); // Calculate the nearest index based on X position
-                    const value = windSpeedChart.data.datasets[0].data[index];
-                    showTooltip(evt, `Wind Speed: ${value.toFixed(2)} m/s`);
-                }
-            },
-            scales: {
-                x: {
-                    beginAtZero: true,
-                    grid: {
-                        display: true,
-                        color: 'rgba(255, 255, 255, 0.2)',
-                        tickMarkLength: 0
-                    },
-                    ticks: {
-                        autoSkip: false,
-                        maxRotation: 90,
-                        minRotation: 90,
-                        font: {
-                            size: 10, // Adjust font size here
-                            family: 'Arial, sans-serif',
+            const ctx = document.getElementById('precipitation-chart').getContext('2d');
+            const precipitationChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: times,
+                    datasets: [{
+                        label: 'Precipitation (mm)',
+                        data: precipitation,
+                        borderColor: '#403bcc',
+                        backgroundColor: '#403bcc',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { 
+                            max: 10,
+                            min: 0,
+                            grid: {
+                                display: true,
+                                color: 'rgba(255, 255, 255, 0.075)', 
+                                lineWidth: 1
+                            },
+                        },
+                        x: {
+                            grid: {
+                                display: true,
+                                color: 'rgba(255, 255, 255, 0.2)',
+                                tickMarkLength: 0
+                            },
+                            ticks: {
+                                autoSkip: false,
+                                maxRotation: 90,
+                                minRotation: 90,
+                                font: {
+                                    size: 10, 
+                                    family: 'Arial, sans-serif',
+                                }
+                            }
                         }
                     }
+                }
+            });
+        }
+
+        function displaySnowfallChart(data) {
+            const currentTime = new Date();
+            const currentHour = currentTime.getHours();
+            const next24Hours = data.hourly.time.slice(currentHour, currentHour + 24);
+            const snowfall = data.hourly.snowfall.slice(currentHour, currentHour + 24);
+            const times = next24Hours.map(time => {
+                const date = new Date(time);
+                return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+            });
+
+            const ctx = document.getElementById('snowfall-chart').getContext('2d');
+            const snowfallChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: times,
+                    datasets: [{
+                        label: 'Snowfall (mm)',
+                        data: snowfall,
+                        borderColor: '#fff',
+                        backgroundColor: '#00bfff',
+                        fill: true
+                    }]
                 },
-                y: {
-                    min: 0, // Fixed minimum for wind speed
-                    max: 12, // Fixed maximum for wind speed
-                    ticks: {
-                        stepSize: 2, // Optional: Control the step size for the y-axis
-                    },
-                    grid: {
-                        display: true,
-                        color: 'rgba(255, 255, 255, 0.075)', // Horizontal grid line color
-                        lineWidth: 1
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { 
+                            max: 10,
+                            min: 0,
+                            grid: {
+                                display: true,
+                                color: 'rgba(255, 255, 255, 0.075)', 
+                                lineWidth: 1
+                            },
+                        },
+                        x: {
+                            grid: {
+                                display: true,
+                                color: 'rgba(255, 255, 255, 0.2)',
+                                tickMarkLength: 0
+                            },
+                            ticks: {
+                                autoSkip: false,
+                                maxRotation: 90,
+                                minRotation: 90,
+                                font: {
+                                    size: 10, 
+                                    family: 'Arial, sans-serif',
+                                }
+                            }
+                        }
                     }
                 }
-            }
-        }
-    });
-}
-
-
-
-        function showTooltip(evt, message) {
-            const tooltip = document.getElementById('tooltip');
-            const rect = evt.chart.canvas.getBoundingClientRect();
-            const x = evt.clientX - rect.left;
-            const y = evt.clientY - rect.top;
-
-            tooltip.style.display = 'block';
-            tooltip.style.left = `${x + 10}px`;
-            tooltip.style.top = `${y + 10}px`;
-            tooltip.textContent = message;
+            });
         }
 
-        // Function to calculate wind speed at 2 meters from 10 meters using the formula
-        function windAt2m(windspeedAt10m) {
-            const z0 = 0.03; // Roughness length for an open field
-            const windAt2m = windspeedAt10m * (Math.log(2 / z0) / Math.log(10 / z0)) / 3.6; // Convert to m/s
-            return windAt2m;
+        function displayWindSpeedChart(data) {
+            const currentTime = new Date();
+            const currentHour = currentTime.getHours();
+            const next24Hours = data.hourly.time.slice(currentHour, currentHour + 24);
+            const windSpeedsAt10m = data.hourly.windspeed_10m.slice(currentHour, currentHour + 24);
+
+            const times = next24Hours.map(time => {
+                const date = new Date(time);
+                return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+            });
+
+            const ctx = document.getElementById('wind-speed-chart').getContext('2d');
+            const windSpeedChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: times,
+                    datasets: [{
+                        label: 'Wind Speed (m/s)',
+                        data: windSpeedsAt10m,
+                        borderColor: '#00bfff',
+                        backgroundColor: 'rgba(0, 191, 255, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            grid: {
+                                display: true,
+                                color: 'rgba(255, 255, 255, 0.2)',
+                                tickMarkLength: 0
+                            },
+                            ticks: {
+                                autoSkip: false,
+                                maxRotation: 90,
+                                minRotation: 90,
+                                font: {
+                                    size: 10,
+                                    family: 'Arial, sans-serif',
+                                }
+                            }
+                        },
+                        y: {
+                            max: 15,
+                            grid: {
+                                display: true,
+                                color: 'rgba(255, 255, 255, 0.075)',
+                                lineWidth: 1
+                            },
+                            ticks: {
+                                stepSize: 3,
+                            }
+                        }
+                    }
+                }
+            });
         }
     </script>
 </body>
