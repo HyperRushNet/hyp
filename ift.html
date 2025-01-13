@@ -90,11 +90,6 @@
                 iframe.src = "/";
             }
 
-            // Herstel de pagina titel
-            if (savedTitle) {
-                document.title = savedTitle;
-            }
-        }
 
         // Ga naar de homepagina en sla de URL op
         function goToHome() {
@@ -103,7 +98,7 @@
             iframe.src = homeUrl;
 
             // Reset de titel naar de standaardtitel
-            document.title = "Iframe Tracker";
+            document.title = "The HyperRush Network";
             localStorage.setItem(LOCAL_STORAGE_TITLE_KEY, "Iframe Tracker");
 
             // Sla de nieuwe URL op
