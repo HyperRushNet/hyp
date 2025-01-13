@@ -44,18 +44,33 @@
         }
     </style>
     <script>
-        function updatePageTitleFromIframe() {
+        const LOCAL_STORAGE_KEY = "iframeLastUrl";
+
+        function updateIframeUrl() {
             const iframe = document.getElementById("iframe");
 
             try {
-                // Haal de titel op van de iframe
-                const iframeWindow = iframe.contentWindow;
-                const pageTitle = iframeWindow.document.title;
+                // Haal de huidige URL van de iframe op
+                const currentUrl = iframe.contentWindow.location.href;
 
-                // Update alleen de titel van de hoofdpagina
-                document.title = pageTitle;
+                // Sla de URL op in localStorage
+                localStorage.setItem(LOCAL_STORAGE_KEY, currentUrl);
             } catch (error) {
-                console.error("Error updating page title from iframe:", error);
+                console.error("Error accessing iframe URL:", error);
+            }
+        }
+
+        function restoreIframeUrl() {
+            const iframe = document.getElementById("iframe");
+
+            // Controleer of er een opgeslagen URL is in localStorage
+            const savedUrl = localStorage.getItem(LOCAL_STORAGE_KEY);
+
+            if (savedUrl) {
+                iframe.src = savedUrl;
+            } else {
+                // Standaard-URL als er geen opgeslagen URL is
+                iframe.src = "/";
             }
         }
 
@@ -66,10 +81,19 @@
 
             // Reset de titel naar de standaardtitel
             document.title = "Iframe Tracker";
+
+            // Sla de nieuwe URL op
+            localStorage.setItem(LOCAL_STORAGE_KEY, homeUrl);
         }
 
-        // Controleer en werk de titel bij elke seconde
-        setInterval(updatePageTitleFromIframe, 1000);
+        window.onload = () => {
+            // Herstel de iframe-URL bij het laden van de pagina
+            restoreIframeUrl();
+
+            // Update de opgeslagen URL elke keer als de iframe verandert
+            const iframe = document.getElementById("iframe");
+            iframe.onload = updateIframeUrl;
+        };
     </script>
 </head>
 <body>
@@ -80,7 +104,7 @@
         onclick="goToHome()" 
         title="Ga naar de homepagina">
     <div id="iframe-container">
-        <iframe id="iframe" src="/" loading="eager"></iframe>
+        <iframe id="iframe" loading="eager"></iframe>
     </div>
 </body>
 </html>
