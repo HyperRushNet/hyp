@@ -4,46 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iframe URL Tracker</title>
+    <link id="dynamic-favicon" rel="icon" href="">
     <script>
-        function updateIframeDetails() {
+        function updatePageFromIframe() {
             const iframe = document.getElementById("iframe");
-            const urlDisplay = document.getElementById("current-url");
-            const titleDisplay = document.getElementById("page-title");
-            const faviconDisplay = document.getElementById("favicon");
 
             try {
-                // Haal gegevens op uit de iframe
+                // Haal details van de iframe op
                 const iframeWindow = iframe.contentWindow;
-                const currentUrl = iframeWindow.location.href;
                 const pageTitle = iframeWindow.document.title;
 
-                // Zoek de favicon
+                // Zoek de favicon in de iframe
                 const faviconElement = iframeWindow.document.querySelector("link[rel~='icon']");
-                const faviconUrl = faviconElement ? faviconElement.href : "Geen favicon gevonden";
+                const faviconUrl = faviconElement ? faviconElement.href : "";
 
-                // Toon de gegevens in de UI
-                urlDisplay.textContent = currentUrl;
-                titleDisplay.textContent = pageTitle;
-                faviconDisplay.src = faviconUrl;
+                // Update de titel van de hoofdpagina
+                document.title = pageTitle;
 
+                // Update de favicon van de hoofdpagina
+                const faviconLink = document.getElementById("dynamic-favicon");
+                if (faviconUrl) {
+                    faviconLink.href = faviconUrl;
+                } else {
+                    faviconLink.href = ""; // Als er geen favicon is, maak het leeg
+                }
             } catch (error) {
-                // Toon foutmelding bij cross-origin-problemen
-                urlDisplay.textContent = "Kan de URL niet ophalen.";
-                titleDisplay.textContent = "Kan de titel niet ophalen.";
-                faviconDisplay.src = "";
-                console.error("Error accessing iframe details:", error);
+                console.error("Error updating page from iframe:", error);
             }
         }
 
-        // Update de details elke seconde
-        setInterval(updateIframeDetails, 1000);
+        // Controleer en werk details bij elke seconde
+        setInterval(updatePageFromIframe, 1000);
     </script>
 </head>
 <body>
-    <h1>Iframe URL Tracker</h1>
-    <p>Huidige URL in iframe: <span id="current-url">Nog niet geladen</span></p>
-    <p>Pagina titel in iframe: <span id="page-title">Nog niet geladen</span></p>
-    <p>Favicon in iframe: <img id="favicon" src="" alt="Favicon" width="16" height="16"></p>
+    <h1>Iframe Dynamische Titel & Favicon</h1>
+    <p>De titel en favicon van de huidige iframe-pagina worden gebruikt.</p>
     <iframe id="iframe" src="/" width="100%" height="600px" style="border:1px solid #ccc;"></iframe>
 </body>
 </html>
