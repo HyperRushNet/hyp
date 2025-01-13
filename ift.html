@@ -5,27 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iframe URL Tracker</title>
     <script>
-        function updateUrl() {
+        function updateIframeDetails() {
             const iframe = document.getElementById("iframe");
             const urlDisplay = document.getElementById("current-url");
+            const titleDisplay = document.getElementById("page-title");
+            const faviconDisplay = document.getElementById("favicon");
 
             try {
-                // Haal de huidige URL van de iframe op
-                const currentUrl = iframe.contentWindow.location.href;
+                // Haal gegevens op uit de iframe
+                const iframeWindow = iframe.contentWindow;
+                const currentUrl = iframeWindow.location.href;
+                const pageTitle = iframeWindow.document.title;
+
+                // Zoek de favicon
+                const faviconElement = iframeWindow.document.querySelector("link[rel~='icon']");
+                const faviconUrl = faviconElement ? faviconElement.href : "Geen favicon gevonden";
+
+                // Toon de gegevens in de UI
                 urlDisplay.textContent = currentUrl;
+                titleDisplay.textContent = pageTitle;
+                faviconDisplay.src = faviconUrl;
+
             } catch (error) {
+                // Toon foutmelding bij cross-origin-problemen
                 urlDisplay.textContent = "Kan de URL niet ophalen.";
-                console.error("Error accessing iframe URL:", error);
+                titleDisplay.textContent = "Kan de titel niet ophalen.";
+                faviconDisplay.src = "";
+                console.error("Error accessing iframe details:", error);
             }
         }
 
-        // Update de URL elke seconde
-        setInterval(updateUrl, 1000);
+        // Update de details elke seconde
+        setInterval(updateIframeDetails, 1000);
     </script>
 </head>
 <body>
     <h1>Iframe URL Tracker</h1>
     <p>Huidige URL in iframe: <span id="current-url">Nog niet geladen</span></p>
+    <p>Pagina titel in iframe: <span id="page-title">Nog niet geladen</span></p>
+    <p>Favicon in iframe: <img id="favicon" src="" alt="Favicon" width="16" height="16"></p>
     <iframe id="iframe" src="/" width="100%" height="600px" style="border:1px solid #ccc;"></iframe>
 </body>
 </html>
