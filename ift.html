@@ -23,8 +23,8 @@
             position: fixed;
             bottom: 10px;
             right: 10px;
-            width: 32px;
-            height: 32px;
+            width: 24px;
+            height: 14px;
             cursor: pointer;
             z-index: 10;
         }
@@ -95,7 +95,7 @@
             iframe.src = homeUrl;
 
             // Reset de titel naar de standaardtitel
-            document.title = "Iframe Tracker";
+            document.title = "Loading..";
 
             // Sla de nieuwe URL op
             localStorage.setItem(LOCAL_STORAGE_KEY, homeUrl);
@@ -121,9 +121,9 @@
         src="https://cdn-icons-png.flaticon.com/512/9073/9073032.png" 
         alt="Home Button" 
         onclick="goToHome()" 
-        title="Ga naar de homepagina">
+        title="Go to the homepage">
     <div id="iframe-container">
-        <iframe id="iframe" loading="eager"></iframe>
+        <iframe allowfullscreen id="iframe" loading="eager"></iframe>
     </div>
 </body>
 </html>
