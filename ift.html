@@ -3,8 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iframe URL Tracker</title>
-    <link id="static-favicon" rel="icon" href="favicon.ico"> <!-- Gebruik je eigen favicon-bestand -->
+    <title>Iframe Tracker</title>
+    <link rel="icon" href="favicon.ico"> <!-- Vaste favicon -->
+    <style>
+        /* Verwijder marges en vul het scherm */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Voorkom scrollbars */
+        }
+
+        #home-button {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        #iframe-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
     <script>
         function updatePageTitleFromIframe() {
             const iframe = document.getElementById("iframe");
@@ -27,7 +65,7 @@
             iframe.src = homeUrl;
 
             // Reset de titel naar de standaardtitel
-            document.title = "Iframe URL Tracker";
+            document.title = "Iframe Tracker";
         }
 
         // Controleer en werk de titel bij elke seconde
@@ -35,9 +73,14 @@
     </script>
 </head>
 <body>
-    <h1>Iframe Dynamische Titel</h1>
-    <button onclick="goToHome()">Home</button>
-    <p>De titel van de huidige iframe-pagina wordt gebruikt, maar het favicon blijft hetzelfde.</p>
-    <iframe id="iframe" src="/" width="100%" height="600px" style="border:1px solid #ccc;"></iframe>
+    <img 
+        id="home-button" 
+        src="https://cdn-icons-png.flaticon.com/512/9073/9073032.png" 
+        alt="Home Button" 
+        onclick="goToHome()" 
+        title="Ga naar de homepagina">
+    <div id="iframe-container">
+        <iframe id="iframe" src="/" loading="eager"></iframe>
+    </div>
 </body>
 </html>
