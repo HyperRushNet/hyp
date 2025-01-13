@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iframe Full Page</title>
+    <style>
+        /* Zorg ervoor dat de iframe de volledige pagina vult */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <iframe src="/testt.html" title="Test Page">
+        <!-- Fallback content voor browsers die geen iframes ondersteunen -->
+        Uw browser ondersteunt geen iframes. Klik <a href="/testt.html">hier</a> om de pagina te bekijken.
+    </iframe>
+</body>
+</html>
