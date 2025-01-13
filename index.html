@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iframe Full Page</title>
+    <title>Cloaked Page</title>
     <style>
         /* Zorg ervoor dat de iframe de volledige pagina vult */
         html, body {
@@ -19,6 +19,15 @@
             height: 100%;
         }
     </style>
+    <script>
+        // Cloaking-functie: Zorg ervoor dat de inhoud in de iframe blijft
+        window.onload = function () {
+            if (window.top !== window.self) {
+                // Als deze pagina in een iframe wordt geopend, blijf binnen het iframe
+                window.top.location = window.self.location;
+            }
+        };
+    </script>
 </head>
 <body>
     <iframe src="/testt.html" title="Test Page">
