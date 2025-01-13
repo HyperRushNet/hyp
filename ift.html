@@ -44,7 +44,8 @@
         }
     </style>
     <script>
-        const LOCAL_STORAGE_KEY = "iframeLastUrl";
+        const LOCAL_STORAGE_URL_KEY = "iframeLastUrl";
+        const LOCAL_STORAGE_TITLE_KEY = "iframeLastTitle";
 
         // Update de titel van de pagina op basis van de iframe
         function updatePageTitleFromIframe() {
@@ -54,9 +55,10 @@
                 const iframeWindow = iframe.contentWindow;
                 const pageTitle = iframeWindow.document.title;
 
-                // Update de titel van de hoofdpagina
+                // Update de titel van de hoofdpagina en sla deze op
                 if (pageTitle) {
                     document.title = pageTitle;
+                    localStorage.setItem(LOCAL_STORAGE_TITLE_KEY, pageTitle);
                 }
             } catch (error) {
                 console.error("Error updating page title from iframe:", error);
@@ -69,22 +71,28 @@
 
             try {
                 const currentUrl = iframe.contentWindow.location.href;
-                localStorage.setItem(LOCAL_STORAGE_KEY, currentUrl);
+                localStorage.setItem(LOCAL_STORAGE_URL_KEY, currentUrl);
             } catch (error) {
                 console.error("Error saving iframe URL:", error);
             }
         }
 
-        // Herstel de URL van de iframe uit localStorage
-        function restoreIframeUrl() {
+        // Herstel de URL en titel uit localStorage
+        function restoreIframeState() {
             const iframe = document.getElementById("iframe");
-            const savedUrl = localStorage.getItem(LOCAL_STORAGE_KEY);
+            const savedUrl = localStorage.getItem(LOCAL_STORAGE_URL_KEY);
+            const savedTitle = localStorage.getItem(LOCAL_STORAGE_TITLE_KEY);
 
+            // Herstel de iframe URL
             if (savedUrl) {
                 iframe.src = savedUrl;
             } else {
-                // Standaard-URL als er geen opgeslagen URL is
                 iframe.src = "/";
+            }
+
+            // Herstel de pagina titel
+            if (savedTitle) {
+                document.title = savedTitle;
             }
         }
 
@@ -96,14 +104,15 @@
 
             // Reset de titel naar de standaardtitel
             document.title = "Iframe Tracker";
+            localStorage.setItem(LOCAL_STORAGE_TITLE_KEY, "Iframe Tracker");
 
             // Sla de nieuwe URL op
-            localStorage.setItem(LOCAL_STORAGE_KEY, homeUrl);
+            localStorage.setItem(LOCAL_STORAGE_URL_KEY, homeUrl);
         }
 
         window.onload = () => {
-            // Herstel de iframe-URL bij het laden van de pagina
-            restoreIframeUrl();
+            // Herstel de iframe staat (URL en titel)
+            restoreIframeState();
 
             const iframe = document.getElementById("iframe");
 
