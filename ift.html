@@ -4,32 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iframe URL Tracker</title>
-    <link id="dynamic-favicon" rel="icon" href="">
+    <link id="static-favicon" rel="icon" href="favicon.ico"> <!-- Gebruik je eigen favicon-bestand -->
     <script>
-        function updatePageFromIframe() {
+        function updatePageTitleFromIframe() {
             const iframe = document.getElementById("iframe");
 
             try {
-                // Haal details van de iframe op
+                // Haal de titel op van de iframe
                 const iframeWindow = iframe.contentWindow;
                 const pageTitle = iframeWindow.document.title;
 
-                // Zoek de favicon in de iframe
-                const faviconElement = iframeWindow.document.querySelector("link[rel~='icon']");
-                const faviconUrl = faviconElement ? faviconElement.href : "";
-
-                // Update de titel van de hoofdpagina
+                // Update alleen de titel van de hoofdpagina
                 document.title = pageTitle;
-
-                // Update de favicon van de hoofdpagina
-                const faviconLink = document.getElementById("dynamic-favicon");
-                if (faviconUrl) {
-                    faviconLink.href = faviconUrl;
-                } else {
-                    faviconLink.href = ""; // Als er geen favicon is, maak het leeg
-                }
             } catch (error) {
-                console.error("Error updating page from iframe:", error);
+                console.error("Error updating page title from iframe:", error);
             }
         }
 
@@ -38,20 +26,18 @@
             const homeUrl = "/"; // Pas dit aan naar je gewenste homepagina
             iframe.src = homeUrl;
 
-            // Reset de titel en favicon naar standaard
+            // Reset de titel naar de standaardtitel
             document.title = "Iframe URL Tracker";
-            const faviconLink = document.getElementById("dynamic-favicon");
-            faviconLink.href = ""; // Optioneel: voeg een standaardfavicon toe
         }
 
-        // Controleer en werk details bij elke seconde
-        setInterval(updatePageFromIframe, 1000);
+        // Controleer en werk de titel bij elke seconde
+        setInterval(updatePageTitleFromIframe, 1000);
     </script>
 </head>
 <body>
-    <h1>Iframe Dynamische Titel & Favicon</h1>
+    <h1>Iframe Dynamische Titel</h1>
     <button onclick="goToHome()">Home</button>
-    <p>De titel en favicon van de huidige iframe-pagina worden gebruikt. Klik op 'Home' om terug te keren naar de startpagina.</p>
+    <p>De titel van de huidige iframe-pagina wordt gebruikt, maar het favicon blijft hetzelfde.</p>
     <iframe id="iframe" src="/" width="100%" height="600px" style="border:1px solid #ccc;"></iframe>
 </body>
 </html>
