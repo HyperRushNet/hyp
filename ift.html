@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The HyperRush Network</title>
+    <title>Iframe Tracker</title>
     <link rel="icon" href="favicon.ico"> <!-- Vaste favicon -->
     <style>
         /* Algemene reset */
@@ -107,11 +107,11 @@
 
             const iframe = document.getElementById("iframe");
 
-            // Update de titel en sla de URL op bij elke navigatie
-            iframe.onload = () => {
+            // Controleer elke seconde de titel en URL
+            setInterval(() => {
                 updatePageTitleFromIframe();
                 saveIframeUrl();
-            };
+            }, 1000);
         };
     </script>
 </head>
