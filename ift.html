@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iframe Tracker</title>
+    <title>The HyperRush Network</title>
     <link rel="icon" href="favicon.ico"> <!-- Vaste favicon -->
     <style>
-        /* Verwijder marges en vul het scherm */
+        /* Algemene reset */
         * {
             margin: 0;
             padding: 0;
@@ -23,8 +23,8 @@
             position: fixed;
             bottom: 10px;
             right: 10px;
-            width: 24px;
-            height: 24px;
+            width: 32px;
+            height: 32px;
             cursor: pointer;
             z-index: 10;
         }
@@ -46,24 +46,38 @@
     <script>
         const LOCAL_STORAGE_KEY = "iframeLastUrl";
 
-        function updateIframeUrl() {
+        // Update de titel van de pagina op basis van de iframe
+        function updatePageTitleFromIframe() {
             const iframe = document.getElementById("iframe");
 
             try {
-                // Haal de huidige URL van de iframe op
-                const currentUrl = iframe.contentWindow.location.href;
+                const iframeWindow = iframe.contentWindow;
+                const pageTitle = iframeWindow.document.title;
 
-                // Sla de URL op in localStorage
-                localStorage.setItem(LOCAL_STORAGE_KEY, currentUrl);
+                // Update de titel van de hoofdpagina
+                if (pageTitle) {
+                    document.title = pageTitle;
+                }
             } catch (error) {
-                console.error("Error accessing iframe URL:", error);
+                console.error("Error updating page title from iframe:", error);
             }
         }
 
-        function restoreIframeUrl() {
+        // Sla de URL van de iframe op in localStorage
+        function saveIframeUrl() {
             const iframe = document.getElementById("iframe");
 
-            // Controleer of er een opgeslagen URL is in localStorage
+            try {
+                const currentUrl = iframe.contentWindow.location.href;
+                localStorage.setItem(LOCAL_STORAGE_KEY, currentUrl);
+            } catch (error) {
+                console.error("Error saving iframe URL:", error);
+            }
+        }
+
+        // Herstel de URL van de iframe uit localStorage
+        function restoreIframeUrl() {
+            const iframe = document.getElementById("iframe");
             const savedUrl = localStorage.getItem(LOCAL_STORAGE_KEY);
 
             if (savedUrl) {
@@ -74,6 +88,7 @@
             }
         }
 
+        // Ga naar de homepagina en sla de URL op
         function goToHome() {
             const iframe = document.getElementById("iframe");
             const homeUrl = "/"; // Pas dit aan naar je gewenste homepagina
@@ -90,9 +105,13 @@
             // Herstel de iframe-URL bij het laden van de pagina
             restoreIframeUrl();
 
-            // Update de opgeslagen URL elke keer als de iframe verandert
             const iframe = document.getElementById("iframe");
-            iframe.onload = updateIframeUrl;
+
+            // Update de titel en sla de URL op bij elke navigatie
+            iframe.onload = () => {
+                updatePageTitleFromIframe();
+                saveIframeUrl();
+            };
         };
     </script>
 </head>
