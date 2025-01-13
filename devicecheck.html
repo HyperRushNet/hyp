@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic iFrame Loader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100vh;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welkom op mijn site!</h1>
+    <div id="iframe-container">Even controleren...</div>
+
+    <script>
+        function loadIframe() {
+            const minWidth = 1024; // Minimum breedte voor een pc
+            const iframeContainer = document.getElementById("iframe-container");
+            let iframeSrc = "";
+
+            if (window.innerWidth >= minWidth) {
+                // PC: Laad /ift.html
+                iframeSrc = "/ift.html";
+            } else {
+                // Mobiel of tablet: Laad /ai.html
+                iframeSrc = "/ai.html";
+            }
+
+            // Voeg het iframe toe aan de container
+            iframeContainer.innerHTML = `<iframe src="${iframeSrc}" title="Dynamic Content"></iframe>`;
+        }
+
+        // Controleer bij het laden van de pagina
+        loadIframe();
+
+        // Optioneel: Controleer opnieuw bij schermresizing
+        window.addEventListener("resize", loadIframe);
+    </script>
+</body>
+</html>
