@@ -44,8 +44,7 @@
         }
     </style>
     <script>
-        const LOCAL_STORAGE_URL_KEY = "iframeLastUrl";
-        const LOCAL_STORAGE_TITLE_KEY = "iframeLastTitle";
+        const LOCAL_STORAGE_KEY = "iframeLastUrl";
 
         // Update de titel van de pagina op basis van de iframe
         function updatePageTitleFromIframe() {
@@ -55,10 +54,9 @@
                 const iframeWindow = iframe.contentWindow;
                 const pageTitle = iframeWindow.document.title;
 
-                // Update de titel van de hoofdpagina en sla deze op
+                // Update de titel van de hoofdpagina
                 if (pageTitle) {
                     document.title = pageTitle;
-                    localStorage.setItem(LOCAL_STORAGE_TITLE_KEY, pageTitle);
                 }
             } catch (error) {
                 console.error("Error updating page title from iframe:", error);
@@ -71,25 +69,24 @@
 
             try {
                 const currentUrl = iframe.contentWindow.location.href;
-                localStorage.setItem(LOCAL_STORAGE_URL_KEY, currentUrl);
+                localStorage.setItem(LOCAL_STORAGE_KEY, currentUrl);
             } catch (error) {
                 console.error("Error saving iframe URL:", error);
             }
         }
 
-        // Herstel de URL en titel uit localStorage
-        function restoreIframeState() {
+        // Herstel de URL van de iframe uit localStorage
+        function restoreIframeUrl() {
             const iframe = document.getElementById("iframe");
-            const savedUrl = localStorage.getItem(LOCAL_STORAGE_URL_KEY);
-            const savedTitle = localStorage.getItem(LOCAL_STORAGE_TITLE_KEY);
+            const savedUrl = localStorage.getItem(LOCAL_STORAGE_KEY);
 
-            // Herstel de iframe URL
             if (savedUrl) {
                 iframe.src = savedUrl;
             } else {
+                // Standaard-URL als er geen opgeslagen URL is
                 iframe.src = "/";
             }
-
+        }
 
         // Ga naar de homepagina en sla de URL op
         function goToHome() {
@@ -98,16 +95,15 @@
             iframe.src = homeUrl;
 
             // Reset de titel naar de standaardtitel
-            document.title = "The HyperRush Network";
-            localStorage.setItem(LOCAL_STORAGE_TITLE_KEY, "Iframe Tracker");
+            document.title = "Iframe Tracker";
 
             // Sla de nieuwe URL op
-            localStorage.setItem(LOCAL_STORAGE_URL_KEY, homeUrl);
+            localStorage.setItem(LOCAL_STORAGE_KEY, homeUrl);
         }
 
         window.onload = () => {
-            // Herstel de iframe staat (URL en titel)
-            restoreIframeState();
+            // Herstel de iframe-URL bij het laden van de pagina
+            restoreIframeUrl();
 
             const iframe = document.getElementById("iframe");
 
@@ -115,7 +111,7 @@
             setInterval(() => {
                 updatePageTitleFromIframe();
                 saveIframeUrl();
-            }, 100);
+            }, 1000);
         };
     </script>
 </head>
