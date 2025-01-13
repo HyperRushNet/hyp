@@ -25,15 +25,15 @@
 
     <script>
         function loadIframe() {
-            const minWidth = 1024; // Minimum breedte voor een pc
+            const minPixelWidth = 1564; // 41.4 cm in pixels
             const iframeContainer = document.getElementById("iframe-container");
             let iframeSrc = "";
 
-            if (window.innerWidth >= minWidth) {
-                // PC: Laad /ift.html
+            if (window.innerWidth >= minPixelWidth) {
+                // Scherm is groter dan 41.4 cm breed (1564 px)
                 iframeSrc = "/ift.html";
             } else {
-                // Mobiel of tablet: Laad /ai.html
+                // Scherm is kleiner dan 41.4 cm breed
                 iframeSrc = "/ai.html";
             }
 
