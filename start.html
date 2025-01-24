@@ -28,36 +28,41 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      animation: fadeOut 2.5s ease forwards;
+      animation: fadeOut 100s ease forwards;
     }
 
     .start-screen img {
       width: 128px;
       height: 128px;
-      animation: scaleUp 2s ease forwards;
+      animation: popEffect 1s ease forwards;
     }
 
     .main-app {
       opacity: 0;
-      animation: fadeIn 2.5s ease forwards;
+      animation: fadeIn 6s ease 1s forwards;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100%;
       width: 100%;
-      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      background: black;
       color: white;
       font-family: Arial, sans-serif;
       font-size: 2rem;
       text-align: center;
     }
 
-    @keyframes scaleUp {
+    @keyframes popEffect {
       0% {
         transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.5);
+        opacity: 1;
       }
       100% {
-        transform: scale(4);
+        transform: scale(0);
         opacity: 0;
       }
     }
@@ -84,10 +89,10 @@
 </head>
 <body>
   <div class="start-screen">
-    <img src="https://hyperrushnet.github.io/favicon.ico" alt="App Logo">
+    <img src="favicon.ico" alt="App Logo">
   </div>
   <div class="main-app">
-    <iframe src="/ift.html" height="100%" width="100%" border="none"></iframe>
+    <iframe src="https://hyperrushnet.github.io/start.html/" height="100%" width="100%" style="border: none;"></iframe>
   </div>
 </body>
 </html>
